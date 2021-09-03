@@ -1,24 +1,13 @@
-import { Application } from "https://deno.land/x/oak/mod.ts";
+import { Application } from 'https://deno.land/x/oak/mod.ts'
+import router from './routes.ts'
+
+const HOST = '127.0.0.1'
+const PORT = 7700
 
 const app = new Application();
 
-// Logger
-app.use(async (ctx, next) => {
-    await next();
-    const rt = ctx.response.headers.get("X-Response-Time");
-    console.log(`${ctx.request.method} ${ctx.request.url} - ${rt}`);
-});
+app.use(router.routes());
+app.use(router.allowedMethods());
 
-// Timing
-app.use(async (ctx, next) => {
-    const start = Date.now();
-    await next();
-    const ms = Date.now() - start;
-    ctx.response.headers.set("X-Response-Time", `${ms}ms`);
-});
-
-app.use((ctx: any) => {
-    ctx.response.body = "Hello World!";
-});
-
-await app.listen({ port: 8000 });
+console.log(`Listening on port ${PORT} ...`)
+await app.listen(`${HOST}:${PORT}`)
